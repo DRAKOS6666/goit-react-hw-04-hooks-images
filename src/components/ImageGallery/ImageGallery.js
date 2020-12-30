@@ -21,16 +21,12 @@ function ImageGallery({ query }) {
   const [modalItem, setModalItem] = useState(null);
 
   useEffect(() => {
-    if (currentPage === 1) {
-      return;
-    }
     getImages();
   }, [currentPage]);
 
   useEffect(() => {
     setImages([]);
     setCurrentPage(1);
-    getImages();
   }, [query]);
 
   useEffect(() => {
@@ -42,7 +38,6 @@ function ImageGallery({ query }) {
 
   const getImages = () => {
     setIsLoading(true);
-
     fetchImage(query, currentPage)
       .then(res => {
         if (res.hits.length > 0) {
@@ -98,32 +93,37 @@ function ImageGallery({ query }) {
 
   const closeModal = () => {
     setIsModal(false);
+    setModalItem(null);
   };
 
   return (
     <>
       {images.length > 0 && (
-        <ul className="ImageGallery">
-          {images.map(item => (
-            <ImageGalleryItem key={item.id} item={item} openModal={openModal} />
-          ))}
-        </ul>
+        <>
+          <ul className="ImageGallery">
+            {images.map(item => (
+              <ImageGalleryItem
+                key={item.id}
+                item={item}
+                openModal={openModal}
+              />
+            ))}
+          </ul>
+          <div className="loadMoreContainer">
+            {isLoading ? (
+              <Loader
+                type="TailSpin"
+                color="#00BFFF"
+                height={40}
+                width={40}
+                timeout={4000}
+              />
+            ) : (
+              <Button loadMore={loadMore} />
+            )}
+          </div>
+        </>
       )}
-      {images.length > 0 ? (
-        <div className="loadMoreContainer">
-          {isLoading ? (
-            <Loader
-              type="TailSpin"
-              color="#00BFFF"
-              height={40}
-              width={40}
-              timeout={4000}
-            />
-          ) : (
-            <Button loadMore={loadMore} />
-          )}
-        </div>
-      ) : null}
       {isModal && (
         <Modal closeModal={closeModal}>
           <img src={modalItem.largeImageURL} alt={modalItem.tags} />
