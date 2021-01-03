@@ -21,12 +21,16 @@ function ImageGallery({ query }) {
   const [modalItem, setModalItem] = useState(null);
 
   useEffect(() => {
-    getImages();
+    if (currentPage === 1) {
+      return;
+    }
+    getImages(currentPage);
   }, [currentPage]);
 
   useEffect(() => {
     setImages([]);
     setCurrentPage(1);
+    getImages(1);
   }, [query]);
 
   useEffect(() => {
@@ -36,7 +40,7 @@ function ImageGallery({ query }) {
     });
   }, [images]);
 
-  const getImages = () => {
+  const getImages = currentPage => {
     setIsLoading(true);
     fetchImage(query, currentPage)
       .then(res => {
